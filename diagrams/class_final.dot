@@ -1,0 +1,21 @@
+digraph C {
+graph [rankdir=TB, bgcolor="white", pad=0.2, nodesep=0.35, ranksep=0.5];
+node [shape=record, style="filled", fontname="Times New Roman", fontsize=10, color="#2F5597", fillcolor="#F7FBFF"];
+edge [fontname="Times New Roman", fontsize=9, color="#555555"];
+r [label="{ApprovalRoute\n«enum»||STANDARD\lFAST_TRACK\lFINANCE_REVIEW\lDIRECTOR_REVIEW\lSECURITY_REVIEW\l}"];
+a [label="{ApprovalRouter|- BASE_LIMIT long\l- LIMIT_DISCOUNT_PERCENT int\l+ FINANCE_LIMIT long\l|+ route(long,boolean,RiskLevel,boolean) ApprovalRoute\l- checkInput(long,RiskLevel) void\l- isHighRisk(RiskLevel) boolean\l- needsFinance(long) boolean\l}"];
+risk [label="{RiskLevel\n«enum»||LOW\lMEDIUM\lHIGH\l}"];
+p [label="{RequestParser||+ routeFromLine(String,ApprovalRouter) ApprovalRoute\l- parseAmount(String) long\l- parseBoolean(String,String) boolean\l- parseRisk(String) RiskLevel\l}"];
+d [label="{DataRunner||+ main(String[]) void\l}"];
+s [label="{SelfCheck||+ main(String[]) void\l}"];
+b [label="{BoundaryCheck||+ main(String[]) void\l- expect(String,ApprovalRoute,ApprovalRoute) void\l- expectError(String,Runnable) void\l}"];
+a -> r [label="returns",style=dashed,arrowhead=open];
+a -> risk [label="uses",style=dashed,arrowhead=open];
+p -> a [label="uses",style=dashed,arrowhead=open];
+p -> risk [label="uses",style=dashed,arrowhead=open];
+d -> p [label="uses",style=dashed,arrowhead=open];
+d -> a [label="uses",style=dashed,arrowhead=open];
+s -> a [label="uses",style=dashed,arrowhead=open];
+b -> a [label="uses",style=dashed,arrowhead=open];
+b -> p [label="uses",style=dashed,arrowhead=open];
+}

@@ -6,16 +6,20 @@ public class BoundaryCheck {
 
     public static void main(String[] args) {
         ApprovalRouter router = new ApprovalRouter();
-        long limit = ApprovalRouter.FINANCE_LIMIT;
+        long finance = ApprovalRouter.FINANCE_LIMIT;
+        long fast = ApprovalRouter.FAST_TRACK_LIMIT;
 
-        expect("граница -1", router.route(limit - 1, false, RiskLevel.LOW, false), ApprovalRoute.STANDARD);
-        expect("граница =", router.route(limit, false, RiskLevel.LOW, false), ApprovalRoute.FINANCE_REVIEW);
-        expect("граница +1", router.route(limit + 1, false, RiskLevel.LOW, false), ApprovalRoute.FINANCE_REVIEW);
-        expect("499999", router.route(499_999, false, RiskLevel.LOW, false), ApprovalRoute.FINANCE_REVIEW);
-        expect("500001", router.route(500_001, false, RiskLevel.LOW, false), ApprovalRoute.FINANCE_REVIEW);
-        expect("500000 по условию", router.route(500_000, false, RiskLevel.LOW, false), ApprovalRoute.FINANCE_REVIEW);
-        expect("срочная ниже порога", router.route(limit - 1, true, RiskLevel.LOW, false), ApprovalRoute.FAST_TRACK);
-        expect("срочная на пороге", router.route(limit, true, RiskLevel.LOW, false), ApprovalRoute.FINANCE_REVIEW);
+        expect("финансы -1", router.route(finance - 1, false, RiskLevel.LOW, false), ApprovalRoute.STANDARD);
+        expect("финансы =", router.route(finance, false, RiskLevel.LOW, false), ApprovalRoute.FINANCE_REVIEW);
+        expect("финансы +1", router.route(finance + 1, false, RiskLevel.LOW, false), ApprovalRoute.FINANCE_REVIEW);
+        expect("срочная fast -1", router.route(fast - 1, true, RiskLevel.LOW, false), ApprovalRoute.FAST_TRACK);
+        expect("срочная fast =", router.route(fast, true, RiskLevel.LOW, false), ApprovalRoute.STANDARD);
+        expect("срочная fast +1", router.route(fast + 1, true, RiskLevel.LOW, false), ApprovalRoute.STANDARD);
+        expect("срочная между порогами", router.route(finance - 1, true, RiskLevel.LOW, false), ApprovalRoute.STANDARD);
+        expect("срочная на финансовом пороге", router.route(finance, true, RiskLevel.LOW, false), ApprovalRoute.FINANCE_REVIEW);
+        expect("срочная выше финансового порога", router.route(finance + 1, true, RiskLevel.LOW, false), ApprovalRoute.FINANCE_REVIEW);
+        expect("не срочная ниже fast", router.route(fast - 1, false, RiskLevel.LOW, false), ApprovalRoute.STANDARD);
+        expect("срочная MEDIUM ниже fast", router.route(fast - 1, true, RiskLevel.MEDIUM, false), ApprovalRoute.FAST_TRACK);
         expect("нулевая сумма", router.route(0, false, RiskLevel.LOW, false), ApprovalRoute.STANDARD);
         expect("ПДн и срочность", router.route(10_000, true, RiskLevel.LOW, true), ApprovalRoute.SECURITY_REVIEW);
         expect("ПДн и большая сумма", router.route(900_000, false, RiskLevel.HIGH, true), ApprovalRoute.SECURITY_REVIEW);

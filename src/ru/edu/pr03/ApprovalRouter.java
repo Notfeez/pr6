@@ -1,9 +1,10 @@
 package ru.edu.pr03;
 
 public class ApprovalRouter {
-    private static final long BASE_LIMIT = 500_000L;
-    private static final int LIMIT_DISCOUNT_PERCENT = 10;
-    public static final long FINANCE_LIMIT = BASE_LIMIT - BASE_LIMIT * LIMIT_DISCOUNT_PERCENT / 100;
+    public static final long FINANCE_LIMIT = 500_000L;
+    private static final long BASE_FAST_TRACK_LIMIT = 500_000L;
+    private static final int FAST_TRACK_DISCOUNT_PERCENT = 35;
+    public static final long FAST_TRACK_LIMIT = BASE_FAST_TRACK_LIMIT - BASE_FAST_TRACK_LIMIT * FAST_TRACK_DISCOUNT_PERCENT / 100;
 
     public ApprovalRoute route(long amount, boolean urgent, RiskLevel risk, boolean containsPersonalData) {
         checkInput(amount, risk);
@@ -16,7 +17,7 @@ public class ApprovalRouter {
         if (needsFinance(amount)) {
             return ApprovalRoute.FINANCE_REVIEW;
         }
-        if (urgent) {
+        if (isFastTrack(amount, urgent)) {
             return ApprovalRoute.FAST_TRACK;
         }
         return ApprovalRoute.STANDARD;
@@ -37,5 +38,9 @@ public class ApprovalRouter {
 
     private boolean needsFinance(long amount) {
         return amount >= FINANCE_LIMIT;
+    }
+
+    private boolean isFastTrack(long amount, boolean urgent) {
+        return urgent && amount < FAST_TRACK_LIMIT;
     }
 }
